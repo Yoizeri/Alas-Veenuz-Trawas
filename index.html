@@ -67,23 +67,21 @@
             width: 104px;
             height: 104px;
             border-radius: 50%;
-            padding: 3px; /* Tight, elegant outer ring */
-            background: linear-gradient(135deg, var(--primary-emerald), transparent);
+            background: #07170e; /* Dark forest green background for the frame */
+            border: 2px solid var(--primary-emerald); /* Solid emerald border */
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden; /* This acts as the circular mask */
         }
 
         .profile-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: contain; /* OPTIMIZED: Prevents clipping/shaving */
-            background-color: #07170e; /* Elegant forest black fallback background */
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 6px; /* OPTIMIZED: The "Safe Zone" padding to keep the logo perfectly intact */
+            width: 85%; /* Shrinks the logo to 85% of the frame to guarantee a safety margin */
+            height: 85%;
+            object-fit: contain; /* Scale down perfectly without cropping */
+            /* No border-radius here to prevent the image from clipping its own details */
         }
 
         .brand-title {
