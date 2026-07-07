@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alas Veenuz Trawas | Official Links</title>
+    <style>
+        /* Hardware GPU Acceleration - 0 Frame Drops, Zero Lag */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { 
+            background: #04120a; 
+            color: #f0fdf4; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            text-align: center; 
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Fog Motion Engine */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(4,18,10,0) 60%);
+            animation: mistMovement 24s infinite linear;
+            z-index: -1;
+            will-change: transform;
+        }
+
+        @keyframes mistMovement {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, 5%) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        /* Custom Premium Logo Ring */
+        .profile-container {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #047857);
+            margin: 0 auto 15px;
+            padding: 3px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+        }
+        .profile-pic { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            background: #ffffff; 
+            object-fit: contain;
+            padding: 5px;
+        }
+
+        h1 { font-size: 1.4rem; font-weight: 700; margin: 12px 0 6px; letter-spacing: -0.3px; color: #ffffff; text-transform: uppercase; }
+        .tagline { color: #a7f3d0; font-size: 0.85rem; margin-bottom: 28px; font-weight: 400; opacity: 0.85; max-width: 280px; margin-left: auto; margin-right: auto; line-height: 1.4; }
+
+        /* Anti-Lag Glassmorphism Engine */
+        .btn { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03); 
+            color: #ffffff; 
+            padding: 15px 20px; 
+            margin: 12px auto; 
+            border-radius: 14px; 
+            text-decoration: none; 
+            width: 100%; 
+            max-width: 360px; 
+            font-weight: 600; 
+            font-size: 0.9rem;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateZ(0);
+            transition: transform 0.1s ease, background 0.2s ease;
+        }
+
+        /* Top Priority Direct Booking Link */
+        .btn-primary {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            box-shadow: 0 6px 18px rgba(4, 120, 87, 0.35);
+        }
+
+        /* Tactile Mobile Press Feel */
+        .btn:active {
+            transform: scale(0.97) translateZ(0);
+            background: rgba(16, 185, 129, 0.15);
+        }
+        .btn-primary:active {
+            background: #065f46;
+        }
+
+        .icon { margin-right: 12px; font-size: 1.1rem; display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <!-- FIXED: Pulls the rock-solid local file from your own GitHub repository -->
+        <img src="logo.png" class="profile-pic" alt="Alas Veenuz Logo">
+    </div>
+    
+    <h1>Alas Veenuz Trawas</h1>
+    <div class="tagline">Tempat piknik dan bumi perkemahan dengan fasilitas terlengkap</div>
+
+    <a href="https://api.whatsapp.com/send?phone=6281249834488" class="btn btn-primary">
+        <span class="icon">📋</span> BROSUR DAN PRICELIST
+    </a>
+
+    <a href="https://api.whatsapp.com/send?phone=6281249834488" class="btn">
+        <span class="icon">💬</span> WhatsApp Admin (07.00–22.00 WIB)
+    </a>
+    
+    <a href="https://api.whatsapp.com/send?phone=6281249834488" class="btn">
+        <span class="icon">⛺</span> Reservasi Regular Camp
+    </a>
+
+    <a href="https://maps.app.goo.gl/v3Yp4RbyGvT48Xyv9" class="btn">
+        <span class="icon">📍</span> Lokasi
+    </a>
+    
+    <a href="https://api.whatsapp.com/send?phone=6281249834488" class="btn">
+        <span class="icon">✨</span> Reservasi Piknik, Lahan VIP, Glamping, dan Cottage
+    </a>
+
+    <a href="https://www.instagram.com/alasveenuztrawas" class="btn">
+        <span class="icon">📸</span> Instagram
+    </a>
+
+    <a href="https://www.tiktok.com/@alasveenuztrawas" class="btn">
+        <span class="icon">🎵</span> Tiktok Alas Veenuz Trawas
+    </a>
+
+    <a href="https://www.youtube.com/@alasveenuztrawas" class="btn">
+        <span class="icon">📺</span> Youtube Alas Veenuz Trawas
+    </a>
+
+</body>
+</html>
+
