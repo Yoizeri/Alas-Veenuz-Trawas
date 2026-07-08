@@ -2,11 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <!-- Locks viewport to prevent zooming, keeping the app-like feel intact -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Tempat piknik dan bumi perkemahan dengan fasilitas terlengkap di Trawas.">
     <title>Alas Veenuz Trawas | Premium Nature Camp</title>
 
     <style>
+        /* =========================================================
+           1. HARDWARE-ACCELERATED RESET & FOUNDATION
+           ========================================================= */
         :root {
             --primary-emerald: #10b981;
             --accent-mint: #a7f3d0;
@@ -21,44 +25,82 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* Prevents sticky tap highlights on mobile webviews */
             -webkit-tap-highlight-color: transparent; 
         }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #050505; 
+            background-color: #020b06; /* Deepest pine forest black */
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        ::-webkit-scrollbar { display: none; }
+        /* Hides scrollbar for ultra-clean UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
 
+        /* =========================================================
+           2. IMMERSIVE VIDEO BACKGROUND & CSS FALLBACK LAYER
+           ========================================================= */
         .video-container {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2; background: #000;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            
+            /* =========================================================
+               PREMIUM FALLBACK BACKGROUND (Zero RAM/Data Cost)
+               Acts as the background if bg.mp4 gets blocked by Low Power Mode
+               ========================================================= */
+            background-color: #05130b; 
+            background-image: 
+                /* Top-left subtle emerald sunlight glow */
+                radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.25), transparent 50%),
+                /* Bottom-right mint reflection */
+                radial-gradient(circle at 85% 80%, rgba(167, 243, 208, 0.1), transparent 50%),
+                /* Outer dark edge vignette */
+                linear-gradient(135deg, #020b06 0%, transparent 40%, #020b06 100%);
         }
 
         .video-bg {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Forces GPU rendering */
             transform: translate3d(0, 0, 0); 
         }
 
         .vignette-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: -1;
+            /* Dark radial gradient ensures high text contrast without blurring */
             background: radial-gradient(circle at center, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.85) 100%);
             pointer-events: none;
         }
 
+        /* =========================================================
+           3. MAIN LAYOUT & TYPOGRAPHIC HIERARCHY
+           ========================================================= */
         .main-container {
-            width: 100%; max-width: 480px; padding: 40px 24px 60px;
-            display: flex; flex-direction: column; align-items: center;
+            width: 100%;
+            max-width: 480px; /* Optimal mobile reading width */
+            padding: 40px 24px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             z-index: 1;
             animation: fadeUpIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -67,7 +109,7 @@
             width: 104px;
             height: 104px;
             border-radius: 50%;
-            background: #07170e; /* Dark forest green background for the frame */
+            background: #07170e; /* Deep forest green background inside the frame */
             border: 2px solid var(--primary-emerald); /* Solid emerald border */
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -78,45 +120,88 @@
         }
 
         .profile-img {
-            width: 76%; /* Shrinks the logo to 85% of the frame to guarantee a safety margin */
-            height: 76%;
+            width: 85%; /* Shrinks the logo to 85% of the frame to guarantee a safety margin */
+            height: 85%;
             object-fit: contain; /* Scale down perfectly without cropping */
             /* No border-radius here to prevent the image from clipping its own details */
         }
 
         .brand-title {
-            font-size: 1.35rem; font-weight: 800; letter-spacing: 1.5px;
-            text-transform: uppercase; text-align: center; margin-bottom: 8px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 8px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .brand-tagline {
-            font-size: 0.95rem; color: var(--accent-mint); text-align: center;
-            font-weight: 400; line-height: 1.5; margin-bottom: 32px; padding: 0 10px;
+            font-size: 0.95rem;
+            color: var(--accent-mint);
+            text-align: center;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            padding: 0 10px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
+        /* =========================================================
+           4. GLASSMORPHISM BUTTONS & TACTILE PHYSICS
+           ========================================================= */
         .link-grid {
-            width: 100%; display: flex; flex-direction: column; gap: 14px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         .link-btn {
-            position: relative; display: flex; align-items: center; width: 100%;
-            padding: 16px 20px; background: var(--glass-bg);
-            border: 1px solid var(--glass-border); border-radius: 18px;
-            text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem;
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            /* Premium Glass Filter */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            /* Hardware Accelerated Transitions */
             transition: transform 0.4s var(--easing-elastic), background 0.3s ease, border-color 0.3s ease;
-            transform: translate3d(0, 0, 0); will-change: transform; overflow: hidden;
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
+            overflow: hidden;
         }
 
-        .link-icon { font-size: 1.25rem; margin-right: 14px; display: flex; align-items: center; justify-content: center; }
-        .link-text { flex-grow: 1; letter-spacing: 0.3px; }
+        .link-icon {
+            font-size: 1.25rem;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .link-text {
+            flex-grow: 1;
+            letter-spacing: 0.3px;
+        }
+
+        /* Desktop Hover state (Ignored by touch devices for better UX) */
         @media (hover: hover) {
-            .link-btn:hover { background: var(--glass-hover); border-color: rgba(16, 185, 129, 0.4); }
+            .link-btn:hover {
+                background: var(--glass-hover);
+                border-color: rgba(16, 185, 129, 0.4);
+            }
         }
 
+        /* Mobile Tactile Press (The physical bounce) */
         .link-btn:active {
             transform: scale(0.95) translate3d(0, 0, 0);
             background: rgba(255, 255, 255, 0.08);
@@ -125,22 +210,53 @@
         /* SMART TV & KEYBOARD ACCESSIBILITY SHIELD */
         .link-btn:focus-visible {
             outline: 2px solid var(--primary-emerald);
-            outline-offset: 4px; background: var(--glass-hover);
+            outline-offset: 4px;
+            background: var(--glass-hover);
         }
 
-        .hero-btn { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); margin-bottom: 6px; }
+        /* =========================================================
+           5. HERO BUTTON AMBIENT GLOW (Zero Memory Leak Engine)
+           ========================================================= */
+        .hero-btn {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.5);
+            margin-bottom: 6px;
+        }
+
+        /* We animate opacity of a pseudo-element instead of animating box-shadow 
+           to save mobile RAM and ensure strict 60fps rendering */
         .hero-btn::before {
-            content: ''; position: absolute; inset: 0; border-radius: inherit;
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.2);
-            z-index: -1; opacity: 0.5; animation: pulseGlow 2.5s ease-in-out infinite alternate; pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
+            animation: pulseGlow 2.5s ease-in-out infinite alternate;
+            pointer-events: none;
         }
 
-        @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
+        @keyframes pulseGlow {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        /* =========================================================
+           6. ENTRANCE CASCADING ANIMATIONS
+           ========================================================= */
         @keyframes fadeUpIn {
-            from { opacity: 0; transform: translateY(30px) translate3d(0, 0, 0); }
-            to { opacity: 1; transform: translateY(0) translate3d(0, 0, 0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px) translate3d(0, 0, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translate3d(0, 0, 0);
+            }
         }
 
+        /* Staggered load for links */
         .link-grid a:nth-child(1) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
         .link-grid a:nth-child(2) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
         .link-grid a:nth-child(3) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
@@ -149,19 +265,26 @@
         .link-grid a:nth-child(6) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
         .link-grid a:nth-child(7) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
         .link-grid a:nth-child(8) { animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+
     </style>
 </head>
 <body>
 
+    <!-- Lowest Z-Index: Immersive Video Foundation + Custom Fallback -->
     <div class="video-container">
+        <!-- Playsinline prevents iOS from overtaking the screen, crucial for Link-in-Bios -->
         <video class="video-bg" autoplay loop muted playsinline>
             <source src="bg.mp4" type="video/mp4">
         </video>
     </div>
 
+    <!-- Middle Z-Index: Contrast & Readability Vignette -->
     <div class="vignette-overlay"></div>
 
+    <!-- Top Z-Index: Content Layer -->
     <main class="main-container">
+        
+        <!-- Profile Identity -->
         <div class="profile-frame">
             <img src="logo2.png" alt="Alas Veenuz Trawas Logo" class="profile-img">
         </div>
@@ -169,14 +292,18 @@
         <h1 class="brand-title">Alas Veenuz Trawas</h1>
         <p class="brand-tagline">Tempat piknik dan bumi perkemahan dengan fasilitas terlengkap</p>
 
+        <!-- Navigation / Link Architecture -->
         <nav class="link-grid">
             
-            <!-- CHANGED: Now this safely links directly to your new internal brochure page -->
+            <!-- Hero Button (Topmost, Glowing) -->
+            <!-- Note: Now points directly to your brand new brochure page -->
             <a href="brosur.html" class="link-btn hero-btn">
                 <span class="link-icon">📋</span>
-                <span class="link-text">BROSUR DAN PRICELIST</span>
+                <span class="link-text">BROSUR DAN PRICelist</span>
             </a>
 
+            <!-- Standard Action Buttons -->
+            <!-- Note: rel="noopener noreferrer" defends against tab-nabbing attacks via target="_blank" -->
             <a href="https://api.whatsapp.com/send?phone=6285172483441" class="link-btn" target="_blank" rel="noopener noreferrer">
                 <span class="link-icon">💬</span>
                 <span class="link-text">WhatsApp Admin (07.00–22.00 WIB)</span>
