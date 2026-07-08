@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Alas Veenuz Trawas - Dapatkan pengalaman berkemah maupun piknik di Alas Veenuz Trawas yang asri dengan orang terdekat anda.">
+    <title>Resort & Booking | Alas Veenuz Trawas</title>
+    
+    <style>
+        /* =========================================================
+           1. HARDWARE-ACCELERATED RESET & SYSTEM VARIABLES
+           ========================================================= */
+        :root {
+            --primary-emerald: #10b981;
+            --emerald-deep: #030e06;
+            --accent-mint: #a7f3d0;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-light: #ffffff;
+            --easing-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--emerald-deep);
+            color: var(--text-light);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h2, h3 {
+            font-family: "Georgia", Georgia, serif;
+            font-weight: 400;
+        }
+
+        /* Hides scrollbars for clean presentation */
+        ::-webkit-scrollbar { display: none; }
+
+        /* =========================================================
+           2. HEADER HEADER NAVIGATION
+           ========================================================= */
+        .nav-header {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 70px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; z-index: 90;
+            background: rgba(3, 14, 6, 0.8);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .back-link-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: white; text-decoration: none; padding: 8px 16px;
+            border-radius: 10px; font-size: 0.9rem; font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .back-link-btn:active { transform: scale(0.95); }
+
+        .nav-logo-img {
+            height: 38px; object-fit: contain; filter: invert(1);
+        }
+
+        /* =========================================================
+           3. HERO SLIDESHOW MODULE (Pure CSS & Native Performance)
+           ========================================================= */
+        .hero-slideshow {
+            position: relative;
+            height: 60vh; width: 100%;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .slide-img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            animation: kenBurns 12s ease-in-out infinite alternate;
+            /* Using original slide images extracted from raw code */
+            background-image: url('https://alasveenuz.id/wp-content/uploads/2022/11/IMG_03391.jpg');
+            background-size: cover; background-position: center;
+        }
+
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(3,14,6,0.3) 0%, rgba(3,14,6,0.95) 100%);
+            z-index: 1;
+        }
+
+        .hero-caption {
+            position: relative; z-index: 2; text-align: center; padding: 0 20px;
+        }
+
+        .hero-title {
+            font-size: 2.2rem; margin-bottom: 12px; text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-subtitle {
+            font-size: 0.95rem; color: var(--accent-mint); max-width: 400px; margin: 0 auto;
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        /* =========================================================
+           4. PRODUCT AND AMENITIES DISPLAY
+           ========================================================= */
+        .section-wrap {
+            padding: 48px 24px; max-width: 600px; margin: 0 auto;
+        }
+
+        .section-heading {
+            font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 24px; border-left: 3px solid var(--primary-emerald);
+            padding-left: 12px;
+        }
+
+        /* Equipment / Rental Pricing Matrix */
+        .equip-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px; margin-bottom: 40px;
+        }
+
+        .equip-item-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 16px; display: flex; flex-direction: column;
+            gap: 6px; transition: border-color 0.3s;
+        }
+
+        .equip-item-card:hover { border-color: var(--primary-emerald); }
+
+        .equip-title { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.85); }
+        .equip-rate { font-size: 1.05rem; font-family: "Georgia", serif; color: var(--accent-mint); }
+
+        /* Tata Tertib / Checklist Layout */
+        .rule-stack {
+            display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px;
+        }
+
+        .rule-row {
+            display: flex; gap: 12px; padding: 14px;
+            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px; font-size: 0.9rem; line-height: 1.5;
+        }
+
+        .rule-badge {
+            background: var(--glass-bg); color: var(--primary-emerald);
+            width: 24px; height: 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+        }
+
+        /* =========================================================
+           5. SECURE RESERVATION SLIDING DRAWER & FOOTER MAP
+           ========================================================= */
+        .sticky-booking-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: rgba(3, 14, 6, 0.9);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--glass-border); z-index: 80;
+            display: flex; align-items: center; justify-content: center; padding: 0 24px;
+        }
+
+        .booking-trigger-btn {
+            width: 100%; max-width: 400px; height: 46px;
+            background: var(--primary-emerald); color: var(--emerald-deep);
+            border: none; border-radius: 23px; font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.2s var(--easing-elastic);
+        }
+
+        .booking-trigger-btn:active { transform: scale(0.95); }
+
+        /* Slide-up Interactive Booking Sheet */
+        .booking-drawer-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .booking-drawer-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .booking-drawer-content {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #05140b; border-top: 1px solid var(--glass-border);
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 30px 24px 40px; z-index: 101;
+            transform: translateY(100%); transition: transform 0.4s var(--easing-elastic);
+        }
+
+        .booking-drawer-overlay.active + .booking-drawer-content {
+            transform: translateY(0);
+        }
+
+        .drawer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .drawer-title { font-size: 1.25rem; font-weight: 700; }
+
+        .close-drawer-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: white; width: 36px; height: 36px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        .ticket-option-stack {
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .ticket-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 18px; display: flex; align-items: center;
+            justify-content: space-between; text-decoration: none; color: white;
+            transition: border-color 0.3s;
+        }
+
+        .ticket-card:hover { border-color: var(--primary-emerald); }
+
+        .ticket-meta h4 { font-size: 1rem; margin-bottom: 4px; }
+        .ticket-meta p { font-size: 0.85rem; color: var(--accent-mint); }
+
+        .book-checkout-btn {
+            background: var(--primary-emerald); color: var(--emerald-deep);
+            padding: 10px 18px; border-radius: 12px; font-weight: 700;
+            font-size: 0.8rem; text-transform: uppercase;
+        }
+
+        /* Maps Integration */
+        .map-frame {
+            width: 100%; height: 260px; border: none; border-radius: 16px;
+            margin-bottom: 40px; filter: invert(90%) hue-rotate(120deg) contrast(90%);
+        }
+
+        /* Smart TV D-Pad / Focus Styling */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--primary-emerald);
+            outline-offset: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header navigation -->
+    <header class="nav-header">
+        <a href="index.html" class="back-link-btn">&larr; Back</a>
+        <img class="nav-logo-img" src="https://alasveenuz.id/wp-content/themes/pulang/images/logo_black.svg" alt="Alas Veenuz Logo">
+        <div style="width: 60px;"></div> <!-- Symmetrical balance -->
+    </header>
+
+    <!-- Slideshow Hero banner -->
+    <section class="hero-slideshow">
+        <div class="slide-img"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-caption">
+            <h2 class="hero-title">ALAS VEENUZ</h2>
+            <p class="hero-subtitle">Bumi perkemahan dan wisata alam dengan fasilitas terlengkap di Trawas.</p>
+        </div>
+    </section>
+
+    <main class="section-wrap">
+        
+        <!-- Section 1: Price List -->
+        <h2 class="section-heading">Sewa Perlengkapan</h2>
+        <div class="equip-grid">
+            <div class="equip-item-card">
+                <span class="equip-title">Kasur Busa 5cm (80X180)</span>
+                <span class="equip-rate">Rp 40k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Tripod</span>
+                <span class="equip-rate">Rp 20k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Tenda untuk 6 Orang</span>
+                <span class="equip-rate">Rp 100k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Tenda untuk 4 Orang</span>
+                <span class="equip-rate">Rp 75k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Tenda untuk 2 Orang</span>
+                <span class="equip-rate">Rp 50k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Sleeping Bag</span>
+                <span class="equip-rate">Rp 10k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Matras</span>
+                <span class="equip-rate">Rp 5k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Bantal Tiup</span>
+                <span class="equip-rate">Rp 5k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Flysheet (3x4m)</span>
+                <span class="equip-rate">Rp 15k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Lampu Tenda + Baterai</span>
+                <span class="equip-rate">Rp 7k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Tikar Piknik</span>
+                <span class="equip-rate">Rp 10k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Meja Lipat</span>
+                <span class="equip-rate">Rp 10k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Kursi Lipat</span>
+                <span class="equip-rate">Rp 10k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Hammock</span>
+                <span class="equip-rate">Rp 10k</span>
+            </div>
+            <div class="equip-item-card">
+                <span class="equip-title">Kabel Roll</span>
+                <span class="equip-rate">Rp 15k</span>
+            </div>
+        </div>
+
+        <!-- Section 2: Tata Tertib -->
+        <h2 class="section-heading">Tata Tertib</h2>
+        <div class="rule-stack">
+            <div class="rule-row">
+                <span class="rule-badge">1</span>
+                <span>Pengunjung wajib membeli karcis tanda masuk wisata.</span>
+            </div>
+            <div class="rule-row">
+                <span class="rule-badge">2</span>
+                <span>Dilarang membawa senjata tajam, miras, narkoba dan sejenisnya.</span>
+            </div>
+            <div class="rule-row">
+                <span class="rule-badge">3</span>
+                <span>Dilarang merusak tanaman atau fasilitas umum di dalam kawasan wisata.</span>
+            </div>
+            <div class="rule-row">
+                <span class="rule-badge">4</span>
+                <span>Dilarang menyalakan api unggun di atas rumput. Wajib gunakan api unggun portabel.</span>
+            </div>
+            <div class="rule-row">
+                <span class="rule-badge">5</span>
+                <span>Wajib tenang di atas jam 23:00 WIB tanpa alat musik/speaker yang bising.</span>
+            </div>
+        </div>
+
+        <!-- Section 3: Google Maps Map -->
+        <h2 class="section-heading">Lokasi Kami</h2>
+        <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15816.957495019138!2d112.5803144!3d-7.6573919!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xeb040e2a7157d5da!2sAlas%20Veenuz%20Trawas!5e0!3m2!1sen!2sid!4v1666396231167!5m2!1sen!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    </main>
+
+    <!-- Bottom Sticky Call-to-Action Bar -->
+    <div class="sticky-booking-bar">
+        <button class="booking-trigger-btn" onclick="toggleDrawer(true)">Pesan Tiket Disini</button>
+    </div>
+
+    <!-- Booking Modal Sliding Sheet Drawer (XSS-Safe, No Plugin Bloat) -->
+    <div class="booking-drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)"></div>
+    <div class="booking-drawer-content" id="drawer-content">
+        <div class="drawer-header">
+            <h3 class="drawer-title">Booking Tiket Wisata</h3>
+            <button class="close-drawer-btn" onclick="toggleDrawer(false)">&times;</button>
+        </div>
+        <div class="ticket-option-stack">
+            
+            <!-- Ticket Item 1: Picnic -->
+            <a href="https://api.whatsapp.com/send?phone=6285172483441&text=Halo%20Alas%20Veenuz%20Trawas,%20saya%20ingin%20memesan%20Tiket%20Piknik" class="ticket-card" target="_blank" rel="noopener noreferrer">
+                <div class="ticket-meta">
+                    <h4>Pesan Tiket Piknik</h4>
+                    <p>Mulai Rp 10.000 / orang</p>
+                </div>
+                <span class="book-checkout-btn">Pesan Sekarang</span>
+            </a>
+
+            <!-- Ticket Item 2: Camping -->
+            <a href="https://api.whatsapp.com/send?phone=6285172483441&text=Halo%20Alas%20Veenuz%20Trawas,%20saya%20ingin%20memesan%20Tiket%20Camping" class="ticket-card" target="_blank" rel="noopener noreferrer">
+                <div class="ticket-meta">
+                    <h4>Pesan Tiket Camping</h4>
+                    <p>Mulai Rp 20.000 / malam</p>
+                </div>
+                <span class="book-checkout-btn">Pesan Sekarang</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Vanilla Javascript Logic (No libraries, zero lag) -->
+    <script>
+        const overlay = document.getElementById('drawer-overlay');
+        const content = document.getElementById('drawer-content');
+
+        function toggleDrawer(open) {
+            if (open) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        // Handle physical escape key for smart TV / Desktop Keyboard D-Pad close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { toggleDrawer(false); }
+        });
+    </script>
+</body>
+</html>
