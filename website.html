@@ -191,7 +191,7 @@
         }
 
         /* =========================================================
-           4. MAIN CONTENT SECTIONS
+           4. MAIN CONTENT SECTIONS (E-COMMERCE INJECTED)
            ========================================================= */
         .section-wrap {
             position: relative; 
@@ -211,12 +211,11 @@
             padding-left: 12px;
         }
 
-        /* Equipment Grid */
         .equip-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 12px; 
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .equip-item-card {
@@ -227,18 +226,94 @@
             display: flex; 
             flex-direction: column; 
             gap: 6px;
+            justify-content: space-between;
         }
 
         .equip-title { 
             font-size: 0.85rem; 
             font-weight: 500; 
             color: rgba(255,255,255,0.85); 
+            line-height: 1.3;
         }
 
         .equip-rate { 
             font-size: 1.05rem; 
             font-family: "Georgia", serif; 
             color: var(--accent-mint); 
+            margin-bottom: 8px;
+        }
+
+        /* New Counter UI Elements */
+        .counter-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            padding: 2px;
+        }
+
+        .cnt-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary-emerald);
+            font-size: 1.2rem;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .cnt-btn:active { background: rgba(255, 255, 255, 0.1); }
+        .cnt-val { font-size: 0.95rem; font-weight: 700; width: 24px; text-align: center; }
+
+        /* Simpan Pilihan Button */
+        .save-selection-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-emerald);
+            color: var(--emerald-deep);
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            margin-bottom: 40px;
+            display: none; /* Controlled by JS */
+            transition: transform 0.2s;
+        }
+        
+        .save-selection-btn:active { transform: scale(0.97); }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translate(-50%, -20px);
+            background: rgba(16, 185, 129, 0.95);
+            color: var(--emerald-deep);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s var(--easing-elastic);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
         }
 
         /* Rules List */
@@ -384,6 +459,45 @@
             justify-content: center; 
         }
 
+        /* E-Commerce Forms inside Drawer */
+        .ticket-form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-row label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .form-row input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .form-row input:focus {
+            border-color: var(--primary-emerald);
+        }
+
+        /* Fix webkit calendar icon color */
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
         .ticket-option-stack { 
             display: flex; 
             flex-direction: column; 
@@ -400,6 +514,8 @@
             justify-content: space-between; 
             text-decoration: none; 
             color: white; 
+            text-align: left;
+            cursor: pointer;
             transition: border-color 0.3s;
         }
 
@@ -463,21 +579,19 @@
 </head>
 <body>
 
+    <!-- Notification Overlay -->
+    <div id="toast-msg" class="toast-notification">Berhasil disimpan!</div>
+
     <header class="nav-header">
-        <!-- POINTS BACK TO PRIMARY BRIDGE: index.html -->
         <a href="index.html" class="back-link-btn" target="_self">&larr; Back</a>
-        
         <img class="nav-logo-img" src="https://alasveenuz.id/wp-content/themes/pulang/images/logo_black.svg" alt="Alas Veenuz Logo" decoding="async">
-        
         <nav>
             <ul class="nav-links" id="menu-list">
                 <li><a href="#equipment">Sewa Alat</a></li>
                 <li><a href="#rules">Tata Tertib</a></li>
-                <!-- POINTS TO BROCHURES: brosur.html -->
                 <li><a href="brosur.html" target="_self">Brosur</a></li>
             </ul>
         </nav>
-        
         <button class="menu-toggle" id="toggle-btn" aria-label="Menu" aria-expanded="false">☰</button>
     </header>
 
@@ -493,68 +607,86 @@
     <main class="section-wrap">
         
         <h2 class="section-heading" id="equipment">Sewa Perlengkapan</h2>
-        <div class="equip-grid">
-            <div class="equip-item-card">
-                <span class="equip-title">Kasur Busa 5cm (80X180)</span>
-                <span class="equip-rate">Rp 40k</span>
+        <div class="equip-grid" id="catalog-container">
+            <!-- All items have data-name and data-price appended for performant JS Extraction -->
+            <div class="equip-item-card" data-name="Kasur Busa 5cm (80X180)" data-price="40000">
+                <div class="card-info"><span class="equip-title">Kasur Busa 5cm (80X180)</span><div class="equip-rate">Rp 40k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Tripod</span>
-                <span class="equip-rate">Rp 20k</span>
+            <div class="equip-item-card" data-name="Tripod" data-price="20000">
+                <div class="card-info"><span class="equip-title">Tripod</span><div class="equip-rate">Rp 20k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Tenda untuk 6 Orang</span>
-                <span class="equip-rate">Rp 100k</span>
+            <div class="equip-item-card" data-name="Tenda untuk 6 Orang" data-price="100000">
+                <div class="card-info"><span class="equip-title">Tenda untuk 6 Orang</span><div class="equip-rate">Rp 100k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Tenda untuk 4 Orang</span>
-                <span class="equip-rate">Rp 75k</span>
+            <div class="equip-item-card" data-name="Tenda untuk 4 Orang" data-price="75000">
+                <div class="card-info"><span class="equip-title">Tenda untuk 4 Orang</span><div class="equip-rate">Rp 75k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Tenda untuk 2 Orang</span>
-                <span class="equip-rate">Rp 50k</span>
+            <div class="equip-item-card" data-name="Tenda untuk 2 Orang" data-price="50000">
+                <div class="card-info"><span class="equip-title">Tenda untuk 2 Orang</span><div class="equip-rate">Rp 50k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Sleeping Bag</span>
-                <span class="equip-rate">Rp 10k</span>
+            <div class="equip-item-card" data-name="Sleeping Bag" data-price="10000">
+                <div class="card-info"><span class="equip-title">Sleeping Bag</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Matras</span>
-                <span class="equip-rate">Rp 5k</span>
+            <div class="equip-item-card" data-name="Matras" data-price="5000">
+                <div class="card-info"><span class="equip-title">Matras</span><div class="equip-rate">Rp 5k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Bantal Tiup</span>
-                <span class="equip-rate">Rp 5k</span>
+            <div class="equip-item-card" data-name="Bantal Tiup" data-price="5000">
+                <div class="card-info"><span class="equip-title">Bantal Tiup</span><div class="equip-rate">Rp 5k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Flysheet (3x4m)</span>
-                <span class="equip-rate">Rp 15k</span>
+            <div class="equip-item-card" data-name="Flysheet (3x4m)" data-price="15000">
+                <div class="card-info"><span class="equip-title">Flysheet (3x4m)</span><div class="equip-rate">Rp 15k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Lampu Tenda + Baterai</span>
-                <span class="equip-rate">Rp 7k</span>
+            <div class="equip-item-card" data-name="Lampu Tenda + Baterai" data-price="7000">
+                <div class="card-info"><span class="equip-title">Lampu Tenda + Baterai</span><div class="equip-rate">Rp 7k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Tikar Piknik</span>
-                <span class="equip-rate">Rp 10k</span>
+            <div class="equip-item-card" data-name="Tikar Piknik" data-price="10000">
+                <div class="card-info"><span class="equip-title">Tikar Piknik</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Meja Lipat</span>
-                <span class="equip-rate">Rp 10k</span>
+            <div class="equip-item-card" data-name="Meja Lipat" data-price="10000">
+                <div class="card-info"><span class="equip-title">Meja Lipat</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Kursi Lipat</span>
-                <span class="equip-rate">Rp 10k</span>
+            <div class="equip-item-card" data-name="Kursi Lipat" data-price="10000">
+                <div class="card-info"><span class="equip-title">Kursi Lipat</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Hammock</span>
-                <span class="equip-rate">Rp 10k</span>
+            <div class="equip-item-card" data-name="Hammock" data-price="10000">
+                <div class="card-info"><span class="equip-title">Hammock</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
-            <div class="equip-item-card">
-                <span class="equip-title">Kabel Roll</span>
-                <span class="equip-rate">Rp 15k</span>
+            <div class="equip-item-card" data-name="Kabel Roll" data-price="15000">
+                <div class="card-info"><span class="equip-title">Kabel Roll</span><div class="equip-rate">Rp 15k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
+            </div>
+            
+            <!-- 3 APPENDED NEW RENTAL ITEMS -->
+            <div class="equip-item-card" data-name="Kompor Portable" data-price="20000">
+                <div class="card-info"><span class="equip-title">Kompor Portable</span><div class="equip-rate">Rp 20k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
+            </div>
+            <div class="equip-item-card" data-name="Grill Pan" data-price="10000">
+                <div class="card-info"><span class="equip-title">Grill Pan</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
+            </div>
+            <div class="equip-item-card" data-name="Nesting" data-price="10000">
+                <div class="card-info"><span class="equip-title">Nesting</span><div class="equip-rate">Rp 10k</div></div>
+                <div class="counter-wrap"><button class="cnt-btn dec" onclick="updateItem(this, -1)">-</button><span class="cnt-val">0</span><button class="cnt-btn inc" onclick="updateItem(this, 1)">+</button></div>
             </div>
         </div>
+
+        <!-- Dynamic Store Button -->
+        <button id="simpan-pilihan-btn" class="save-selection-btn" onclick="saveSelectionTrigger()">Simpan Pilihan</button>
 
         <h2 class="section-heading" id="rules">Tata Tertib</h2>
         <div class="rule-stack">
@@ -593,48 +725,64 @@
     <div class="booking-drawer-overlay" id="drawer-overlay" onclick="toggleDrawer(false)"></div>
     <div class="booking-drawer-content" id="drawer-content">
         <div class="drawer-header">
-            <h3 class="drawer-title">Booking Tiket Wisata</h3>
+            <h3 class="drawer-title">Pesan Tiket & Checkout</h3>
             <button class="close-drawer-btn" onclick="toggleDrawer(false)">&times;</button>
         </div>
+        
+        <!-- State Input Form -->
+        <div class="ticket-form-stack">
+            <div class="form-row">
+                <label for="input-date">Tanggal Kedatangan</label>
+                <input type="date" id="input-date" required>
+            </div>
+            <div style="display:flex; gap: 12px;">
+                <div class="form-row" style="flex:1;">
+                    <label for="input-pax">Dewasa / >5 Thn</label>
+                    <input type="number" id="input-pax" min="1" value="1" required>
+                </div>
+                <div class="form-row" style="flex:1;">
+                    <label for="input-child">Anak <5 Thn (Gratis)</label>
+                    <input type="number" id="input-child" min="0" value="0">
+                </div>
+            </div>
+        </div>
+
         <div class="ticket-option-stack">
-            <a href="https://api.whatsapp.com/send?phone=6285172483441&text=Halo%20Alas%20Veenuz%20Trawas,%20saya%20ingin%20memesan%20Tiket%20Piknik" class="ticket-card" target="_blank" rel="noopener noreferrer">
+            <button class="ticket-card" onclick="executeRoutingLogic('piknik')">
                 <div class="ticket-meta">
-                    <h4>Pesan Tiket Piknik</h4>
-                    <p>Mulai Rp 10.000 / orang</p>
+                    <h4>Tiket Piknik</h4>
+                    <p>Rp 20.000 / org (Bayar di lokasi)</p>
                 </div>
-                <span class="book-checkout-btn">Pesan</span>
-            </a>
-            <a href="https://api.whatsapp.com/send?phone=6285172483441&text=Halo%20Alas%20Veenuz%20Trawas,%20saya%20ingin%20memesan%20Tiket%20Camping" class="ticket-card" target="_blank" rel="noopener noreferrer">
+                <span class="book-checkout-btn">Pilih</span>
+            </button>
+            <button class="ticket-card" onclick="executeRoutingLogic('camping')">
                 <div class="ticket-meta">
-                    <h4>Pesan Tiket Camping</h4>
-                    <p>Mulai Rp 20.000 / malam</p>
+                    <h4>Tiket Camping</h4>
+                    <p>Rp 30.000 / orang per malam</p>
                 </div>
-                <span class="book-checkout-btn">Pesan</span>
-            </a>
+                <span class="book-checkout-btn">Pilih</span>
+            </button>
         </div>
     </div>
 
     <script>
+        /* =========================================================
+           UI TOGGLE LOGIC
+           ========================================================= */
         const overlay = document.getElementById('drawer-overlay');
         const content = document.getElementById('drawer-content');
         const toggleBtn = document.getElementById('toggle-btn');
         const menuList = document.getElementById('menu-list');
 
         function toggleDrawer(open) { 
-            if (open) {
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
-            }
+            if (open) { overlay.classList.add('active'); } 
+            else { overlay.classList.remove('active'); }
         }
         
         toggleBtn.addEventListener('click', () => {
             const isOpen = menuList.classList.contains('active');
-            if (isOpen) {
-                menuList.classList.remove('active');
-            } else {
-                menuList.classList.add('active');
-            }
+            if (isOpen) menuList.classList.remove('active');
+            else menuList.classList.add('active');
             toggleBtn.setAttribute('aria-expanded', !isOpen);
         });
 
@@ -652,6 +800,128 @@
                 toggleBtn.setAttribute('aria-expanded', 'false'); 
             }
         });
+
+        /* =========================================================
+           E-COMMERCE CORE LOGIC (STATE & COUNTERS)
+           ========================================================= */
+        // Performant Map for Rental Inventory
+        const stateSewa = new Map();
+        
+        // Target format conversion (IDR)
+        const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+
+        function updateItem(btnElement, delta) {
+            const card = btnElement.closest('.equip-item-card');
+            const itemName = card.getAttribute('data-name');
+            const itemPrice = parseInt(card.getAttribute('data-price'), 10);
+            const valSpan = card.querySelector('.cnt-val');
+            
+            // Get current qty from State
+            let currentData = stateSewa.get(itemName) || { price: itemPrice, qty: 0 };
+            let newQty = currentData.qty + delta;
+            
+            if (newQty < 0) newQty = 0; // Prevent negative stock
+
+            if (newQty === 0) {
+                stateSewa.delete(itemName);
+            } else {
+                currentData.qty = newQty;
+                stateSewa.set(itemName, currentData);
+            }
+
+            // Update DOM Counter directly
+            valSpan.textContent = newQty;
+
+            // Reactively control the "Simpan Pilihan" button
+            const simpanBtn = document.getElementById('simpan-pilihan-btn');
+            const totalItems = Array.from(stateSewa.values()).reduce((sum, item) => sum + item.qty, 0);
+            
+            if (totalItems > 0) {
+                simpanBtn.style.display = 'block';
+            } else {
+                simpanBtn.style.display = 'none';
+            }
+        }
+
+        /* =========================================================
+           TOAST NOTIFICATION LOGIC
+           ========================================================= */
+        let toastTimeout;
+        function saveSelectionTrigger() {
+            const toast = document.getElementById('toast-msg');
+            toast.classList.add('show');
+            
+            if(toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        /* =========================================================
+           TERMINAL CONDITIONAL ROUTING TO WHATSAPP
+           ========================================================= */
+        function executeRoutingLogic(ticketType) {
+            // 1. Initialize Booking State
+            const stateTiket = {
+                type: ticketType,
+                date: document.getElementById('input-date').value,
+                pax: parseInt(document.getElementById('input-pax').value) || 1,
+                child: parseInt(document.getElementById('input-child').value) || 0
+            };
+
+            // Gatekeeper Validation
+            if (!stateTiket.date) {
+                alert('Silakan pilih Tanggal Kedatangan terlebih dahulu.');
+                return;
+            }
+
+            // 2. Aggregate Cart Totals
+            let totalSewa = 0;
+            let listSewaString = "";
+            let totalItems = 0;
+
+            stateSewa.forEach((data, name) => {
+                totalSewa += (data.price * data.qty);
+                listSewaString += `- ${data.qty}x ${name} (${formatRp(data.price)})\n`;
+                totalItems += data.qty;
+            });
+
+            const totalBiayaCamping = stateTiket.pax * 30000;
+            const waNumber = "6285172483441";
+            let waText = "";
+
+            // 3. Conditional Flow Engine
+            if (stateTiket.type === 'piknik') {
+                
+                if (totalItems === 0) {
+                    // CONDITION: TIKET PIKNIK + NO RENTAL ITEMS
+                    alert("Tiket piknik tanpa sewa alat tidak perlu direservasi secara online. Silakan langsung datang ke lokasi dan lakukan pembayaran tunai sebesar Rp 20.000/orang di loket fisik. Sampai jumpa!");
+                    return; // Halt Execution
+                } else {
+                    // CONDITION: TIKET PIKNIK + HAS RENTAL ITEMS
+                    waText = `Halo Alas Veenuz Trawas, saya ingin reservasi alat untuk PIKNIK.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nAlat disewa:\n${listSewaString}\nTotal Sewa Alat: ${formatRp(totalSewa)}\n\nCatatan: Tiket masuk piknik akan saya bayar secara langsung (tunai) saat tiba di loket fisik.`;
+                }
+
+            } else if (stateTiket.type === 'camping') {
+                
+                if (totalItems === 0) {
+                    // CONDITION: TIKET CAMPING + NO RENTAL ITEMS
+                    waText = `TIKET CAMPING REGULER (Membawa Peralatan Sendiri)\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nTotal Tiket Camping: ${formatRp(totalBiayaCamping)} (Anak <5 Thn Gratis)`;
+                } else {
+                    // CONDITION: TIKET CAMPING + HAS RENTAL ITEMS
+                    const grandTotal = totalSewa + totalBiayaCamping;
+                    waText = `TIKET CAMPING & SEWA ALAT\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping sekaligus Sewa Alat.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nAlat disewa:\n${listSewaString}\nSubtotal Sewa: ${formatRp(totalSewa)}\nSubtotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\nGRAND TOTAL: ${formatRp(grandTotal)}`;
+                }
+
+            }
+
+            // 4. Secure Encoding and Dispatch
+            const encodedText = encodeURIComponent(waText);
+            const waUrl = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodedText}`;
+            
+            // Redirect
+            window.open(waUrl, '_blank');
+        }
     </script>
 </body>
 </html>
