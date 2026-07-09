@@ -576,6 +576,10 @@
             }
         }
     </style>
+
+    <!-- Umami Analytics: Lightweight, Privacy-focused, Non-blocking -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="MASUKKAN-ID-UMAMI-KAMU-DISINI"></script>
+
 </head>
 <body>
 
@@ -729,21 +733,18 @@
             <button class="close-drawer-btn" onclick="toggleDrawer(false)">&times;</button>
         </div>
         
-        <!-- State Input Form -->
+        <!-- State Input Form (UPDATED UI) -->
         <div class="ticket-form-stack">
             <div class="form-row">
                 <label for="input-date">Tanggal Kedatangan</label>
                 <input type="date" id="input-date" required>
             </div>
-            <div style="display:flex; gap: 12px;">
-                <div class="form-row" style="flex:1;">
-                    <label for="input-pax">Dewasa / >5 Thn</label>
-                    <input type="number" id="input-pax" min="1" value="1" required>
-                </div>
-                <div class="form-row" style="flex:1;">
-                    <label for="input-child">Anak <5 Thn (Gratis)</label>
-                    <input type="number" id="input-child" min="0" value="0">
-                </div>
+            <div class="form-row">
+                <label for="input-pax">Jumlah Orang (Dewasa / >5 Tahun)</label>
+                <input type="number" id="input-pax" min="1" value="1" required>
+                <p style="font-size: 0.8rem; color: var(--accent-mint); margin-top: 4px; line-height: 1.4;">
+                    *Anak usia di bawah 5 tahun tidak dikenakan biaya tiket (Gratis).
+                </p>
             </div>
         </div>
 
@@ -804,7 +805,7 @@
         /* =========================================================
            E-COMMERCE CORE LOGIC (STATE & COUNTERS)
            ========================================================= */
-        // Performant Map for Rental Inventory
+        // Performant Map for Rental Inventory (Memory Optimized)
         const stateSewa = new Map();
         
         // Target format conversion (IDR)
@@ -861,15 +862,15 @@
            TERMINAL CONDITIONAL ROUTING TO WHATSAPP
            ========================================================= */
         function executeRoutingLogic(ticketType) {
+            
             // 1. Initialize Booking State
             const stateTiket = {
                 type: ticketType,
                 date: document.getElementById('input-date').value,
-                pax: parseInt(document.getElementById('input-pax').value) || 1,
-                child: parseInt(document.getElementById('input-child').value) || 0
+                pax: parseInt(document.getElementById('input-pax').value) || 1
             };
 
-            // Gatekeeper Validation
+            // Gatekeeper Validation for Date
             if (!stateTiket.date) {
                 alert('Silakan pilih Tanggal Kedatangan terlebih dahulu.');
                 return;
@@ -899,18 +900,18 @@
                     return; // Halt Execution
                 } else {
                     // CONDITION: TIKET PIKNIK + HAS RENTAL ITEMS
-                    waText = `Halo Alas Veenuz Trawas, saya ingin reservasi alat untuk PIKNIK.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nAlat disewa:\n${listSewaString}\nTotal Sewa Alat: ${formatRp(totalSewa)}\n\nCatatan: Tiket masuk piknik akan saya bayar secara langsung (tunai) saat tiba di loket fisik.`;
+                    waText = `Halo Alas Veenuz Trawas, saya ingin reservasi alat untuk PIKNIK.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nTotal Sewa Alat: ${formatRp(totalSewa)}\n\nCatatan: Tiket masuk piknik akan saya bayar secara langsung (tunai) saat tiba di loket fisik. (Anak <5 Thn Gratis)`;
                 }
 
             } else if (stateTiket.type === 'camping') {
                 
                 if (totalItems === 0) {
                     // CONDITION: TIKET CAMPING + NO RENTAL ITEMS
-                    waText = `TIKET CAMPING REGULER (Membawa Peralatan Sendiri)\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nTotal Tiket Camping: ${formatRp(totalBiayaCamping)} (Anak <5 Thn Gratis)`;
+                    waText = `TIKET CAMPING REGULER (Membawa Peralatan Sendiri)\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nTotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
                 } else {
                     // CONDITION: TIKET CAMPING + HAS RENTAL ITEMS
                     const grandTotal = totalSewa + totalBiayaCamping;
-                    waText = `TIKET CAMPING & SEWA ALAT\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping sekaligus Sewa Alat.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Dewasa, ${stateTiket.child} Anak\n\nAlat disewa:\n${listSewaString}\nSubtotal Sewa: ${formatRp(totalSewa)}\nSubtotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\nGRAND TOTAL: ${formatRp(grandTotal)}`;
+                    waText = `TIKET CAMPING & SEWA ALAT\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping sekaligus Sewa Alat.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nSubtotal Sewa: ${formatRp(totalSewa)}\nSubtotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\nGRAND TOTAL: ${formatRp(grandTotal)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
                 }
 
             }
@@ -919,7 +920,7 @@
             const encodedText = encodeURIComponent(waText);
             const waUrl = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodedText}`;
             
-            // Redirect
+            // Redirect to WhatsApp Native/Web
             window.open(waUrl, '_blank');
         }
     </script>
