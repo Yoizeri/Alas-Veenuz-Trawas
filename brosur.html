@@ -46,7 +46,8 @@
             width: 100%; 
             max-width: 1000px; 
             margin: 0 auto; 
-            padding: 24px 24px 80px; 
+            padding: 24px 24px 80px;
+            content-visibility: auto; /* Performance Optimization */
         }
 
         .header { 
@@ -67,8 +68,8 @@
             border: 1px solid var(--glass-border); 
             border-radius: 12px; 
             color: white;
-            text-decoration: none; 
-            backdrop-filter: blur(10px); 
+            text-decoration: none;
+            /* Removed backdrop-filter for performance */
             transition: transform 0.2s;
         }
 
@@ -90,6 +91,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 16px;
+            contain: layout paint; /* Performance Optimization */
         }
 
         .gallery-item {
@@ -102,9 +104,10 @@
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
             opacity: 0; 
-            animation: fadeUpIn 0.6s forwards; 
+            /* Optimized Staggered Entrance using CSS Custom Property */
+            animation: fadeUpIn 0.6s calc(0.05s * var(--index, 1) + 0.05s) forwards; 
             transform: translate3d(0,0,0); 
-            will-change: transform;
+            will-change: transform; /* Performance Optimization */
         }
 
         .gallery-item:active { 
@@ -119,25 +122,7 @@
         }
 
         /* =========================================================
-           4. STAGGERED ENTRANCE ANIMATIONS
-           ========================================================= */
-        .gallery-grid img:nth-child(1)  { animation-delay: 0.1s; } 
-        .gallery-grid img:nth-child(2)  { animation-delay: 0.15s; }
-        .gallery-grid img:nth-child(3)  { animation-delay: 0.2s; } 
-        .gallery-grid img:nth-child(4)  { animation-delay: 0.25s; }
-        .gallery-grid img:nth-child(5)  { animation-delay: 0.3s; } 
-        .gallery-grid img:nth-child(6)  { animation-delay: 0.35s; }
-        .gallery-grid img:nth-child(7)  { animation-delay: 0.4s; } 
-        .gallery-grid img:nth-child(8)  { animation-delay: 0.45s; }
-        .gallery-grid img:nth-child(9)  { animation-delay: 0.5s; } 
-        .gallery-grid img:nth-child(10) { animation-delay: 0.55s; }
-        .gallery-grid img:nth-child(11) { animation-delay: 0.6s; } 
-        .gallery-grid img:nth-child(12) { animation-delay: 0.65s; }
-        .gallery-grid img:nth-child(13) { animation-delay: 0.7s; } 
-        .gallery-grid img:nth-child(14) { animation-delay: 0.75s; }
-
-        /* =========================================================
-           5. LIGHTBOX OVERLAY
+           4. LIGHTBOX OVERLAY
            ========================================================= */
         .lightbox {
             position: fixed; 
@@ -165,6 +150,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             transform: scale(0.9); 
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform; /* Performance Optimization */
         }
 
         .lightbox.active .lightbox-img { 
@@ -191,6 +177,51 @@
         }
     </style>
 
+    <!-- Optimized Scripts moved to head with defer -->
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            let isLightboxOpen = false;
+
+            // Null check for safe execution
+            if (!lightbox || !lightboxImg) return;
+
+            // Attached to window to be accessible by inline onclick handlers
+            window.openLightbox = function(src) { 
+                if (isLightboxOpen) return; // Prevent rapid opens
+                isLightboxOpen = true;
+                lightboxImg.src = src; 
+                lightbox.classList.add('active'); 
+            }
+
+            window.closeLightbox = function() { 
+                if (!isLightboxOpen) return;
+                isLightboxOpen = false; // Reset immediately to prevent glitches
+                lightbox.classList.remove('active'); 
+                setTimeout(() => { 
+                    lightboxImg.src = ''; 
+                }, 300); 
+            }
+            
+            // Keyboard Accessibility for Enter Key
+            document.querySelectorAll('.gallery-item').forEach(item => { 
+                item.addEventListener('keypress', function(e) { 
+                    if (e.key === 'Enter') {
+                        window.openLightbox(this.src); 
+                    }
+                }); 
+            });
+
+            // Keyboard Accessibility for Escape Key
+            document.addEventListener('keydown', function(e) { 
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    window.closeLightbox(); 
+                }
+            });
+        });
+    </script>
+    
     <!-- Umami Analytics: Lightweight, Privacy-focused, Non-blocking -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="6efa40e3-8d24-4680-995a-b33252859c64"></script>
 
@@ -208,20 +239,21 @@
         </header>
 
         <main class="gallery-grid">
-            <img src="1.webp" alt="Sewa Lahan Campervan" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="2.webp" alt="Paket BBQ Grill Oh My Beef" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="3.webp" alt="Price List Tiket Masuk" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="4.webp" alt="Paket Forest Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="5.webp" alt="Paket Nature Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="6.webp" alt="Sewa Lahan Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="7.webp" alt="Family Camp Package" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="8.webp" alt="Paket Outbound Fun Game" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="9.webp" alt="Camp Rate & Cara Reservasi" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="10.webp" alt="Tentang Kami Alas Veenuz" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="11.webp" alt="Tiket Masuk Wisata Alam" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="12.webp" alt="Picnic Package Alas Veenuz" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="13.webp" alt="Persewaan Perlengkapan Berkemah" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
-            <img src="14.webp" alt="Fasilitas Cottage" class="gallery-item" loading="lazy" decoding="async" tabindex="0" onclick="openLightbox(this.src)">
+            <!-- Used CSS custom property (--index) for staggering animations. Priority high for first 3 LCP images. Added onerror for fallback handling. -->
+            <img src="1.webp" alt="Sewa Lahan Campervan" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 1;" fetchpriority="high" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="2.webp" alt="Paket BBQ Grill Oh My Beef" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 2;" fetchpriority="high" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="3.webp" alt="Price List Tiket Masuk" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 3;" fetchpriority="high" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="4.webp" alt="Paket Forest Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 4;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="5.webp" alt="Paket Nature Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 5;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="6.webp" alt="Sewa Lahan Glamping" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 6;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="7.webp" alt="Family Camp Package" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 7;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="8.webp" alt="Paket Outbound Fun Game" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 8;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="9.webp" alt="Camp Rate & Cara Reservasi" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 9;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="10.webp" alt="Tentang Kami Alas Veenuz" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 10;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="11.webp" alt="Tiket Masuk Wisata Alam" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 11;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="12.webp" alt="Picnic Package Alas Veenuz" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 12;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="13.webp" alt="Persewaan Perlengkapan Berkemah" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 13;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
+            <img src="14.webp" alt="Fasilitas Cottage" class="gallery-item" loading="lazy" decoding="async" tabindex="0" style="--index: 14;" onerror="this.style.display='none'" onclick="openLightbox(this.src)">
         </main>
     </div>
 
@@ -231,37 +263,5 @@
         <span class="close-hint">Tap anywhere to close</span>
     </div>
 
-    <script>
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-
-        function openLightbox(src) { 
-            lightboxImg.src = src; 
-            lightbox.classList.add('active'); 
-        }
-
-        function closeLightbox() { 
-            lightbox.classList.remove('active'); 
-            setTimeout(() => { 
-                lightboxImg.src = ''; 
-            }, 300); 
-        }
-        
-        // Keyboard Accessibility for Enter Key
-        document.querySelectorAll('.gallery-item').forEach(item => { 
-            item.addEventListener('keypress', function(e) { 
-                if (e.key === 'Enter') {
-                    openLightbox(this.src); 
-                }
-            }); 
-        });
-
-        // Keyboard Accessibility for Escape Key
-        document.addEventListener('keydown', function(e) { 
-            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox(); 
-            }
-        });
-    </script>
 </body>
 </html>
