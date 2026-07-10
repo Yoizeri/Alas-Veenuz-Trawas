@@ -31,6 +31,7 @@
         html { 
             scroll-behavior: smooth; 
             background-color: var(--emerald-deep); 
+            scrollbar-width: none; /* Firefox scrollbar hide */
         }
         
         body {
@@ -39,6 +40,7 @@
             color: var(--text-light);
             overflow-x: hidden; 
             -webkit-font-smoothing: antialiased;
+            scrollbar-width: none; /* Firefox scrollbar hide */
         }
 
         h2, h3 { 
@@ -68,6 +70,7 @@
             backdrop-filter: blur(16px); 
             -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--glass-border);
+            will-change: transform; /* GPU layer promotion */
         }
 
         .back-link-btn {
@@ -113,7 +116,7 @@
             display: flex; 
             gap: 20px; 
             list-style: none; 
-            transition: all 0.3s ease; 
+            transition: transform 0.3s ease, opacity 0.3s ease; /* Optimized transition */
         }
 
         .nav-links a { 
@@ -141,6 +144,7 @@
             align-items: center; 
             justify-content: center;
             background-color: var(--emerald-deep); 
+            contain: paint; /* Performance containment */
         }
 
         .slide-img {
@@ -152,6 +156,7 @@
             background-image: url('https://alasveenuz.id/wp-content/uploads/2022/11/IMG_03391.jpg');
             background-size: cover; 
             background-position: center;
+            background-attachment: local; /* Smoother scrolling */
             transform: scale(1.02);
             animation: kenBurns 15s ease-in-out infinite alternate;
             will-change: transform;
@@ -200,6 +205,7 @@
             padding: 48px 24px 100px; 
             max-width: 800px; 
             margin: 0 auto;
+            contain: layout paint; /* Performance containment */
         }
 
         .section-heading {
@@ -216,6 +222,7 @@
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 12px; 
             margin-bottom: 20px;
+            contain: layout paint; /* Performance containment */
         }
 
         .equip-item-card {
@@ -323,6 +330,7 @@
             gap: 12px; 
             margin-bottom: 40px; 
             content-visibility: auto; 
+            contain-intrinsic-size: 0 500px; /* Better estimation */
         }
 
         .rule-row {
@@ -376,6 +384,7 @@
             align-items: center; 
             justify-content: center; 
             padding: 0 24px;
+            will-change: transform; /* GPU layer promotion */
         }
 
         .booking-trigger-btn {
@@ -406,6 +415,7 @@
             opacity: 0; 
             pointer-events: none; 
             transition: opacity 0.4s ease;
+            will-change: opacity; /* GPU layer promotion */
         }
 
         .booking-drawer-overlay.active { 
@@ -428,6 +438,7 @@
             z-index: 101;
             transform: translate(-50%, 100%); 
             transition: transform 0.4s var(--easing-elastic);
+            will-change: transform; /* GPU layer promotion */
         }
 
         .booking-drawer-overlay.active + .booking-drawer-content { 
@@ -580,6 +591,190 @@
     <!-- Umami Analytics: Lightweight, Privacy-focused, Non-blocking -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="6efa40e3-8d24-4680-995a-b33252859c64"></script>
 
+    <!-- Optimized Logic wrapped in DOMContentLoaded and moved to head -->
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* =========================================================
+               DOM ELEMENTS & NULL CHECKS
+               ========================================================= */
+            const overlay = document.getElementById('drawer-overlay');
+            if (!overlay) console.error('drawer-overlay not found');
+            
+            const toggleBtn = document.getElementById('toggle-btn');
+            if (!toggleBtn) console.error('toggle-btn not found');
+            
+            const menuList = document.getElementById('menu-list');
+            if (!menuList) console.error('menu-list not found');
+            
+            // Cached Simpan button globally
+            const simpanBtn = document.getElementById('simpan-pilihan-btn');
+            if (!simpanBtn) console.error('simpan-pilihan-btn not found');
+            
+            const toast = document.getElementById('toast-msg');
+            if (!toast) console.error('toast-msg not found');
+            
+            const inputDate = document.getElementById('input-date');
+            if (!inputDate) console.error('input-date not found');
+            
+            const inputPax = document.getElementById('input-pax');
+            if (!inputPax) console.error('input-pax not found');
+
+            // Set minimum date to today
+            if (inputDate) {
+                inputDate.min = new Date().toISOString().split('T')[0];
+            }
+
+            /* =========================================================
+               UI TOGGLE LOGIC
+               ========================================================= */
+            window.toggleDrawer = function(open) {
+                if (!overlay) return;
+                if (open) { overlay.classList.add('active'); } 
+                else { overlay.classList.remove('active'); }
+            };
+            
+            if (toggleBtn && menuList) {
+                toggleBtn.addEventListener('click', () => {
+                    const isOpen = menuList.classList.contains('active');
+                    if (isOpen) menuList.classList.remove('active');
+                    else menuList.classList.add('active');
+                    // Ensure boolean is stringified for aria-expanded
+                    toggleBtn.setAttribute('aria-expanded', String(!isOpen));
+                });
+            }
+
+            if (menuList) {
+                document.querySelectorAll('#menu-list a').forEach(link => {
+                    link.addEventListener('click', () => { 
+                        menuList.classList.remove('active'); 
+                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false'); 
+                    });
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { 
+                    // Guard conditions to avoid firing unnecessarily
+                    if (overlay && overlay.classList.contains('active')) {
+                        window.toggleDrawer(false); 
+                    }
+                    if (menuList && menuList.classList.contains('active')) {
+                        menuList.classList.remove('active'); 
+                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false'); 
+                    }
+                }
+            });
+
+            /* =========================================================
+               E-COMMERCE CORE LOGIC (STATE & COUNTERS)
+               ========================================================= */
+            const stateSewa = new Map();
+            const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+
+            window.updateItem = function(btnElement, delta) {
+                const card = btnElement.closest('.equip-item-card');
+                if (!card) return;
+                
+                const itemName = card.getAttribute('data-name');
+                const itemPrice = parseInt(card.getAttribute('data-price'), 10);
+                const valSpan = card.querySelector('.cnt-val');
+                
+                let currentData = stateSewa.get(itemName) || { price: itemPrice, qty: 0 };
+                let newQty = currentData.qty + delta;
+                
+                if (newQty < 0) newQty = 0; 
+
+                if (newQty === 0) {
+                    stateSewa.delete(itemName);
+                } else {
+                    currentData.qty = newQty;
+                    stateSewa.set(itemName, currentData);
+                }
+
+                if (valSpan) valSpan.textContent = newQty;
+
+                // Performant iteration without array reallocation
+                let totalItems = 0;
+                stateSewa.forEach(item => { totalItems += item.qty; });
+                
+                if (simpanBtn) {
+                    if (totalItems > 0) {
+                        simpanBtn.style.display = 'block';
+                    } else {
+                        simpanBtn.style.display = 'none';
+                    }
+                }
+            };
+
+            /* =========================================================
+               TOAST NOTIFICATION LOGIC
+               ========================================================= */
+            let toastTimeout;
+            window.saveSelectionTrigger = function() {
+                if (!toast) return; // Silent fail prevented
+                
+                toast.classList.add('show');
+                
+                if(toastTimeout) clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            };
+
+            /* =========================================================
+               TERMINAL CONDITIONAL ROUTING TO WHATSAPP
+               ========================================================= */
+            window.executeRoutingLogic = function(ticketType) {
+                if (!inputDate || !inputPax) return; // Prevent crash if missing
+                
+                const stateTiket = {
+                    type: ticketType,
+                    date: inputDate.value,
+                    pax: Math.max(1, parseInt(inputPax.value) || 1) // Prevents negative values
+                };
+
+                if (!stateTiket.date) {
+                    alert('Silakan pilih Tanggal Kedatangan terlebih dahulu.');
+                    return;
+                }
+
+                let totalSewa = 0;
+                let listSewaString = "";
+                let totalItems = 0;
+
+                stateSewa.forEach((data, name) => {
+                    totalSewa += (data.price * data.qty);
+                    listSewaString += `- ${data.qty}x ${name} (${formatRp(data.price)})\n`;
+                    totalItems += data.qty;
+                });
+
+                const totalBiayaCamping = stateTiket.pax * 30000;
+                const waNumber = "6285172483441";
+                let waText = "";
+
+                if (stateTiket.type === 'piknik') {
+                    if (totalItems === 0) {
+                        alert("Tiket piknik tanpa sewa alat tidak perlu direservasi secara online. Silakan langsung datang ke lokasi dan lakukan pembayaran tunai sebesar Rp 20.000/orang di loket fisik. Sampai jumpa!");
+                        return; 
+                    } else {
+                        waText = `Halo Alas Veenuz Trawas, saya ingin reservasi alat untuk PIKNIK.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nTotal Sewa Alat: ${formatRp(totalSewa)}\n\nCatatan: Tiket masuk piknik akan saya bayar secara langsung (tunai) saat tiba di loket fisik. (Anak <5 Thn Gratis)`;
+                    }
+                } else if (stateTiket.type === 'camping') {
+                    if (totalItems === 0) {
+                        waText = `TIKET CAMPING REGULER (Membawa Peralatan Sendiri)\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nTotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
+                    } else {
+                        const grandTotal = totalSewa + totalBiayaCamping;
+                        waText = `TIKET CAMPING & SEWA ALAT\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping sekaligus Sewa Alat.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nSubtotal Sewa: ${formatRp(totalSewa)}\nSubtotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\nGRAND TOTAL: ${formatRp(grandTotal)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
+                    }
+                }
+
+                const encodedText = encodeURIComponent(waText);
+                const waUrl = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodedText}`;
+                
+                window.open(waUrl, '_blank');
+            };
+        });
+    </script>
 </head>
 <body>
 
@@ -588,7 +783,7 @@
 
     <header class="nav-header">
         <a href="index.html" class="back-link-btn" target="_self">&larr; Back</a>
-        <img class="nav-logo-img" src="https://alasveenuz.id/wp-content/themes/pulang/images/logo_black.svg" alt="Alas Veenuz Logo" decoding="async">
+        <img class="nav-logo-img" src="https://alasveenuz.id/wp-content/themes/pulang/images/logo_black.svg" alt="Alas Veenuz Logo" decoding="async" fetchpriority="high" onerror="this.style.display='none'">
         <nav>
             <ul class="nav-links" id="menu-list">
                 <li><a href="#equipment">Sewa Alat</a></li>
@@ -717,7 +912,7 @@
         </div>
 
         <h2 class="section-heading">Lokasi Kami</h2>
-        <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15816.957495019138!2d112.5803144!3d-7.6573919!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xeb040e2a7157d5da!2sAlas%20Veenuz%20Trawas!5e0!3m2!1sen!2sid!4v1666396231167!5m2!1sen!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15816.957495019138!2d112.5803144!3d-7.6573919!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xeb040e2a7157d5da!2sAlas%20Veenuz%20Trawas!5e0!3m2!1sen!2sid!4v1666396231167!5m2!1sen!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin allow-popups" title="Lokasi Alas Veenuz Trawas di Google Maps"></iframe>
     </main>
 
     <!-- Bottom Sticky Call-to-Action Bar -->
@@ -766,163 +961,5 @@
         </div>
     </div>
 
-    <script>
-        /* =========================================================
-           UI TOGGLE LOGIC
-           ========================================================= */
-        const overlay = document.getElementById('drawer-overlay');
-        const content = document.getElementById('drawer-content');
-        const toggleBtn = document.getElementById('toggle-btn');
-        const menuList = document.getElementById('menu-list');
-
-        function toggleDrawer(open) { 
-            if (open) { overlay.classList.add('active'); } 
-            else { overlay.classList.remove('active'); }
-        }
-        
-        toggleBtn.addEventListener('click', () => {
-            const isOpen = menuList.classList.contains('active');
-            if (isOpen) menuList.classList.remove('active');
-            else menuList.classList.add('active');
-            toggleBtn.setAttribute('aria-expanded', !isOpen);
-        });
-
-        document.querySelectorAll('#menu-list a').forEach(link => {
-            link.addEventListener('click', () => { 
-                menuList.classList.remove('active'); 
-                toggleBtn.setAttribute('aria-expanded', 'false'); 
-            });
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { 
-                toggleDrawer(false); 
-                menuList.classList.remove('active'); 
-                toggleBtn.setAttribute('aria-expanded', 'false'); 
-            }
-        });
-
-        /* =========================================================
-           E-COMMERCE CORE LOGIC (STATE & COUNTERS)
-           ========================================================= */
-        // Performant Map for Rental Inventory (Memory Optimized)
-        const stateSewa = new Map();
-        
-        // Target format conversion (IDR)
-        const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-
-        function updateItem(btnElement, delta) {
-            const card = btnElement.closest('.equip-item-card');
-            const itemName = card.getAttribute('data-name');
-            const itemPrice = parseInt(card.getAttribute('data-price'), 10);
-            const valSpan = card.querySelector('.cnt-val');
-            
-            // Get current qty from State
-            let currentData = stateSewa.get(itemName) || { price: itemPrice, qty: 0 };
-            let newQty = currentData.qty + delta;
-            
-            if (newQty < 0) newQty = 0; // Prevent negative stock
-
-            if (newQty === 0) {
-                stateSewa.delete(itemName);
-            } else {
-                currentData.qty = newQty;
-                stateSewa.set(itemName, currentData);
-            }
-
-            // Update DOM Counter directly
-            valSpan.textContent = newQty;
-
-            // Reactively control the "Simpan Pilihan" button
-            const simpanBtn = document.getElementById('simpan-pilihan-btn');
-            const totalItems = Array.from(stateSewa.values()).reduce((sum, item) => sum + item.qty, 0);
-            
-            if (totalItems > 0) {
-                simpanBtn.style.display = 'block';
-            } else {
-                simpanBtn.style.display = 'none';
-            }
-        }
-
-        /* =========================================================
-           TOAST NOTIFICATION LOGIC
-           ========================================================= */
-        let toastTimeout;
-        function saveSelectionTrigger() {
-            const toast = document.getElementById('toast-msg');
-            toast.classList.add('show');
-            
-            if(toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 5000);
-        }
-
-        /* =========================================================
-           TERMINAL CONDITIONAL ROUTING TO WHATSAPP
-           ========================================================= */
-        function executeRoutingLogic(ticketType) {
-            
-            // 1. Initialize Booking State
-            const stateTiket = {
-                type: ticketType,
-                date: document.getElementById('input-date').value,
-                pax: parseInt(document.getElementById('input-pax').value) || 1
-            };
-
-            // Gatekeeper Validation for Date
-            if (!stateTiket.date) {
-                alert('Silakan pilih Tanggal Kedatangan terlebih dahulu.');
-                return;
-            }
-
-            // 2. Aggregate Cart Totals
-            let totalSewa = 0;
-            let listSewaString = "";
-            let totalItems = 0;
-
-            stateSewa.forEach((data, name) => {
-                totalSewa += (data.price * data.qty);
-                listSewaString += `- ${data.qty}x ${name} (${formatRp(data.price)})\n`;
-                totalItems += data.qty;
-            });
-
-            const totalBiayaCamping = stateTiket.pax * 30000;
-            const waNumber = "6285172483441";
-            let waText = "";
-
-            // 3. Conditional Flow Engine
-            if (stateTiket.type === 'piknik') {
-                
-                if (totalItems === 0) {
-                    // CONDITION: TIKET PIKNIK + NO RENTAL ITEMS
-                    alert("Tiket piknik tanpa sewa alat tidak perlu direservasi secara online. Silakan langsung datang ke lokasi dan lakukan pembayaran tunai sebesar Rp 20.000/orang di loket fisik. Sampai jumpa!");
-                    return; // Halt Execution
-                } else {
-                    // CONDITION: TIKET PIKNIK + HAS RENTAL ITEMS
-                    waText = `Halo Alas Veenuz Trawas, saya ingin reservasi alat untuk PIKNIK.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nTotal Sewa Alat: ${formatRp(totalSewa)}\n\nCatatan: Tiket masuk piknik akan saya bayar secara langsung (tunai) saat tiba di loket fisik. (Anak <5 Thn Gratis)`;
-                }
-
-            } else if (stateTiket.type === 'camping') {
-                
-                if (totalItems === 0) {
-                    // CONDITION: TIKET CAMPING + NO RENTAL ITEMS
-                    waText = `TIKET CAMPING REGULER (Membawa Peralatan Sendiri)\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nTotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
-                } else {
-                    // CONDITION: TIKET CAMPING + HAS RENTAL ITEMS
-                    const grandTotal = totalSewa + totalBiayaCamping;
-                    waText = `TIKET CAMPING & SEWA ALAT\n\nHalo Alas Veenuz Trawas, saya ingin reservasi Lahan Camping sekaligus Sewa Alat.\n\nTanggal: ${stateTiket.date}\nJumlah: ${stateTiket.pax} Orang (>5 Thn)\n\nAlat disewa:\n${listSewaString}\nSubtotal Sewa: ${formatRp(totalSewa)}\nSubtotal Tiket Camping: ${formatRp(totalBiayaCamping)}\n\nGRAND TOTAL: ${formatRp(grandTotal)}\n\n*Catatan: Anak usia di bawah 5 tahun gratis tiket.`;
-                }
-
-            }
-
-            // 4. Secure Encoding and Dispatch
-            const encodedText = encodeURIComponent(waText);
-            const waUrl = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodedText}`;
-            
-            // Redirect to WhatsApp Native/Web
-            window.open(waUrl, '_blank');
-        }
-    </script>
 </body>
 </html>
