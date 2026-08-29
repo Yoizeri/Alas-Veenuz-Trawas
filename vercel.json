@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self';"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;"
         },
         {
           "key": "X-Frame-Options",
@@ -25,9 +25,20 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "geolocation=(), microphone=(), camera=()"
+          "value": "geolocation=(), microphone=(), camera=(), payment=()"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, immutable"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
     }
   ]
 }
